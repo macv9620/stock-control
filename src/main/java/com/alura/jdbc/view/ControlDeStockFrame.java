@@ -17,6 +17,7 @@ import javax.swing.table.DefaultTableModel;
 
 import com.alura.jdbc.controller.CategoriaController;
 import com.alura.jdbc.controller.ProductoController;
+import com.alura.jdbc.model.Product;
 
 public class ControlDeStockFrame extends JFrame {
 
@@ -51,9 +52,10 @@ public class ControlDeStockFrame extends JFrame {
         tabla = new JTable();
 
         modelo = (DefaultTableModel) tabla.getModel();
-        modelo.addColumn("Identificador del Producto");
-        modelo.addColumn("Nombre del Producto");
-        modelo.addColumn("Descripción del Producto");
+        modelo.addColumn("Id");
+        modelo.addColumn("Nombre");
+        modelo.addColumn("Descripción");
+        modelo.addColumn("Cantidad");
 
         cargarTabla();
 
@@ -185,8 +187,10 @@ public class ControlDeStockFrame extends JFrame {
                     String nombre = (String) modelo.getValueAt(tabla.getSelectedRow(), 1);
                     String descripcion = (String) modelo.getValueAt(tabla.getSelectedRow(), 2);
 
-                    this.productoController.modificar(nombre, descripcion, id);
-                }, () -> JOptionPane.showMessageDialog(this, "Por favor, elije un item"));
+                    int affectedRows = this.productoController.modificar(nombre, descripcion, id);
+
+                    JOptionPane.showMessageDialog(this, affectedRows + " Item actualizado con éxito!");
+                }, () -> JOptionPane.showMessageDialog(this, "Por favor, elige un item"));
     }
 
     private void eliminar() {
@@ -199,11 +203,11 @@ public class ControlDeStockFrame extends JFrame {
                 .ifPresentOrElse(fila -> {
                     Integer id = (Integer) modelo.getValueAt(tabla.getSelectedRow(), 0);
 
-                    this.productoController.eliminar(id);
+                    int affectedRows = this.productoController.eliminar(id);
 
                     modelo.removeRow(tabla.getSelectedRow());
 
-                    JOptionPane.showMessageDialog(this, "Item eliminado con éxito!");
+                    JOptionPane.showMessageDialog(this, affectedRows+ " Item eliminado con éxito!");
                 }, () -> JOptionPane.showMessageDialog(this, "Por favor, elije un item"));
     }
 
@@ -211,9 +215,8 @@ public class ControlDeStockFrame extends JFrame {
         var productos = this.productoController.listar();
 
         try {
-            // TODO
-            // productos.forEach(producto -> modelo.addRow(new Object[] { "id", "nombre",
-            // "descripcion" }));
+            productos.forEach(producto -> modelo.addRow(new Object[] { producto.getId(), producto.getName(),
+            producto.getDescription(), producto.getQuantity() }));
         } catch (Exception e) {
             throw e;
         }
@@ -236,12 +239,18 @@ public class ControlDeStockFrame extends JFrame {
         }
 
         // TODO
-        var producto = new Object[] { textoNombre.getText(), textoDescripcion.getText(), cantidadInt };
+        //var producto = new Object[] { textoNombre.getText(), textoDescripcion.getText(), cantidadInt };
+
+        Product producto = new Product();
+        producto.setName(textoNombre.getText());
+        producto.setDescription(textoDescripcion.getText());
+        producto.setQuantity(cantidadInt);
+
         var categoria = comboCategoria.getSelectedItem();
 
-        this.productoController.guardar(producto);
+        int newProductId = this.productoController.guardar(producto);
 
-        JOptionPane.showMessageDialog(this, "Registrado con éxito!");
+        JOptionPane.showMessageDialog(this, "Producto registrado - ProductId: " + newProductId);
 
         this.limpiarFormulario();
     }
