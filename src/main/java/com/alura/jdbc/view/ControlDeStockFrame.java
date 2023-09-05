@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import javax.swing.JButton;
@@ -17,6 +18,7 @@ import javax.swing.table.DefaultTableModel;
 
 import com.alura.jdbc.controller.CategoriaController;
 import com.alura.jdbc.controller.ProductoController;
+import com.alura.jdbc.model.Category;
 import com.alura.jdbc.model.Product;
 
 public class ControlDeStockFrame extends JFrame {
@@ -25,7 +27,7 @@ public class ControlDeStockFrame extends JFrame {
 
     private JLabel labelNombre, labelDescripcion, labelCantidad, labelCategoria;
     private JTextField textoNombre, textoDescripcion, textoCantidad;
-    private JComboBox<Object> comboCategoria;
+    private JComboBox<Category> comboCategoria;
     private JButton botonGuardar, botonModificar, botonLimpiar, botonEliminar, botonReporte;
     private JTable tabla;
     private DefaultTableModel modelo;
@@ -97,11 +99,13 @@ public class ControlDeStockFrame extends JFrame {
         textoDescripcion = new JTextField();
         textoCantidad = new JTextField();
         comboCategoria = new JComboBox<>();
-        comboCategoria.addItem("Elige una Categoría");
+        Category defaultCategory = new Category();
+        defaultCategory.setName("Elige una Categoría");
+        comboCategoria.addItem(defaultCategory);
 
         // TODO
-        var categorias = this.categoriaController.listar();
-        // categorias.forEach(categoria -> comboCategoria.addItem(categoria));
+        ArrayList<Category> categorias = this.categoriaController.listar();
+        categorias.forEach(categoria -> comboCategoria.addItem(categoria));
 
         textoNombre.setBounds(10, 25, 265, 20);
         textoDescripcion.setBounds(10, 65, 265, 20);
@@ -183,11 +187,12 @@ public class ControlDeStockFrame extends JFrame {
 
         Optional.ofNullable(modelo.getValueAt(tabla.getSelectedRow(), tabla.getSelectedColumn()))
                 .ifPresentOrElse(fila -> {
-                    Integer id = (Integer) modelo.getValueAt(tabla.getSelectedRow(), 0);
-                    String nombre = (String) modelo.getValueAt(tabla.getSelectedRow(), 1);
-                    String descripcion = (String) modelo.getValueAt(tabla.getSelectedRow(), 2);
+                    Product product = new Product();
+                    product.setId((Integer) modelo.getValueAt(tabla.getSelectedRow(), 0));
+                    product.setName((String) modelo.getValueAt(tabla.getSelectedRow(), 1));
+                    product.setDescription((String) modelo.getValueAt(tabla.getSelectedRow(), 2));
 
-                    int affectedRows = this.productoController.modificar(nombre, descripcion, id);
+                    int affectedRows = this.productoController.modificar(product);
 
                     JOptionPane.showMessageDialog(this, affectedRows + " Item actualizado con éxito!");
                 }, () -> JOptionPane.showMessageDialog(this, "Por favor, elige un item"));
@@ -223,8 +228,13 @@ public class ControlDeStockFrame extends JFrame {
     }
 
     private void guardar() {
+        Category categoria = (Category) comboCategoria.getSelectedItem();
+
         if (textoNombre.getText().isBlank() || textoDescripcion.getText().isBlank()) {
             JOptionPane.showMessageDialog(this, "Los campos Nombre y Descripción son requeridos.");
+            return;
+        } else if (categoria.getId() == 0) {
+            JOptionPane.showMessageDialog(this, "Por favor selecciona una categoria");
             return;
         }
 
@@ -241,12 +251,14 @@ public class ControlDeStockFrame extends JFrame {
         // TODO
         //var producto = new Object[] { textoNombre.getText(), textoDescripcion.getText(), cantidadInt };
 
+        //Category categoria = (Category) comboCategoria.getSelectedItem();
+
         Product producto = new Product();
         producto.setName(textoNombre.getText());
         producto.setDescription(textoDescripcion.getText());
         producto.setQuantity(cantidadInt);
+        producto.setCategory_id(categoria.getId());
 
-        var categoria = comboCategoria.getSelectedItem();
 
         int newProductId = this.productoController.guardar(producto);
 
