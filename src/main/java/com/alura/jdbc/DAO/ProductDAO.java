@@ -35,12 +35,12 @@ public class ProductDAO {
                         newProductId = ejecutarGuardado(name, description, quantity, producto.getCategory_id(), ps);
                         quantity = 0;
                         con.commit();
-                        System.out.println("Successful commit...");
+                        //System.out.println("Successful commit...");
                     }
                 } catch (RuntimeException e){
                     e.printStackTrace();
                     con.rollback();
-                    System.out.println("Rollback");
+                    //System.out.println("Rollback");
                 }
 
 

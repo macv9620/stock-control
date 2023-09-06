@@ -7,7 +7,7 @@ public class PruebasPool {
         for (int i = 0; i<= 10; i++){
             DBConnection dbConnection = new DBConnection();
             dbConnection.getDBConnection();
-            System.out.println("Abriendo conexión " + i);
+            //System.out.println("Abriendo conexión " + i);
         }
     }
 }

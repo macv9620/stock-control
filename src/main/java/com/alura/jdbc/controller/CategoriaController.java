@@ -11,14 +11,12 @@ import java.util.List;
 public class CategoriaController {
 
 	public ArrayList<Category> listar() {
-		ArrayList<Category> categories = null;
-        categories = newConnectionDAO().listar();
-		return categories;
+        return newConnectionDAO().listar();
 	}
 
-    public List<?> cargaReporte() {
+    public ArrayList<Category> cargaReporte() {
         // TODO
-        return new ArrayList<>();
+        return newConnectionDAO().listarConProductos();
     }
 
     private CategoryDAO newConnectionDAO(){

@@ -29,10 +29,10 @@ public class DBConnection {
         try{
             System.out.println("Iniciando conexión");
             con = this.datasource.getConnection();
-            System.out.println("Conexión establecida");
+            //System.out.println("Conexión establecida");
 
         } catch (SQLException e){
-            System.out.println("Error en conexión");
+            //System.out.println("Error en conexión");
             e.printStackTrace();
         }
 

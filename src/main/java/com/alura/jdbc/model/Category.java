@@ -1,8 +1,20 @@
 package com.alura.jdbc.model;
 
+import java.util.ArrayList;
+
 public class Category {
     private int id;
     private String name;
+    private ArrayList<Product> products = new ArrayList<>();
+
+    public ArrayList<Product> getProducts() {
+        return products;
+    }
+
+    public void addProduct(Product product) {
+        this.products.add(product);
+    }
+
 
     public int getId() {
         return id;
